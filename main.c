@@ -15,8 +15,10 @@
 void	feast(t_philos *philo)
 {
 	t_info	*info;
+	long long	time;
 
 	info = philo->info;
+	time = info->eat_time;
 	pthread_mutex_lock(&(info->fork[philo->l_fork]));
 	ft_print(timestamp() - philo->begin, info, philo, "has taken a fork");
 	if (info->number_philo == 1)
@@ -32,7 +34,11 @@ void	feast(t_philos *philo)
 	{
 		philo->last_meal = timestamp();
 		pthread_mutex_unlock(&(info->mutex));
-		usleep(info->eat_time * 1000);
+		while (!info->dead && time > 0)
+		{
+			time -= 10;
+			usleep(10 * 1000);
+		}
 		pthread_mutex_lock(&(info->mutex));
 		philo->meals = philo->meals + 1;
 	}
